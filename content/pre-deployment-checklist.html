@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Pre-Deployment Checklist I Wish I'd Had — Coder Trader</title>
+  <meta name="description" content="Eight checks that separate trading bots that survive from bots that blow up.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+  <main class="site-main" data-back-to-contents>
+
+    <div class="post-meta">
+      <span class="tag">RISK & OPS</span>
+      <span>14 May 2026</span>
+      <span>7 min read</span>
+    </div>
+
+    <h1>Before you press <span class="accent">start.</span></h1>
+
+    <p class="post-lede">
+      The pre-deployment checklist I wish someone had handed me before my first live bot. Eight checks, ordered by what kills accounts fastest.
+    </p>
+
+    <p>
+      I've seen too many devs spend months building a "profitable" strategy, then lose half their account in a week because they skipped the boring stuff. The edge isn't in the entry logic. The edge is in surviving long enough for the entry logic to matter.
+    </p>
+
+    <h2>Risk Controls</h2>
+    <p>This is the part nobody wants to do and everybody regrets skipping.</p>
+    <ul>
+      <li><strong>Stop loss on every position.</strong> Exchange-native stops are better because they keep working if your bot crashes.</li>
+      <li><strong>Max risk per trade enforced in code.</strong> Not a config you remember to set. A hard guard that rejects orders over your defined R, usually 0.5 to 1 percent of equity.</li>
+      <li><strong>Daily loss circuit breaker.</strong> After N losing trades or X percent drawdown, the bot stops opening new positions and requires you to manually unlock it.</li>
+      <li><strong>Cap concurrent positions, size, and leverage</strong> in code. The exchange UI is not enough.</li>
+    </ul>
+
+    <h2>Kill Switch</h2>
+    <p>When something goes wrong, you have seconds, not minutes.</p>
+    <ul>
+      <li><strong>One command that flattens everything.</strong> Test it before you need it.</li>
+      <li><strong>Know how to kill the process in 10 seconds</strong> from muscle memory.</li>
+      <li><strong>Know how to close from the exchange app on your phone</strong> in case your server is the problem.</li>
+      <li><strong>Dead man's switch</strong> for strategies with open tail risk.</li>
+    </ul>
+
+    <h2>Monitoring</h2>
+    <p>If you can't see what your bot is doing, you don't have a bot, you have a prayer.</p>
+    <ul>
+      <li><strong>Push notifications</strong> for fills, stops, errors, disconnections.</li>
+      <li><strong>A live dashboard</strong> for positions, P&L, and connection status.</li>
+      <li><strong>Structured logs</strong>, machine-readable, with trade IDs.</li>
+      <li><strong>Stale data detection</strong> that pauses new entries when the feed lags.</li>
+    </ul>
+
+    <h2>Code Structure</h2>
+    <p>Regardless of your language, a few patterns save you later.</p>
+    <ul>
+      <li>Put the <strong>exchange behind an interface</strong> so adding a new venue is a config change.</li>
+      <li><strong>Centralise risk checks</strong> in one component all strategies call.</li>
+      <li><strong>Separate "decide to trade" from "place the order".</strong></li>
+      <li>Use the <strong>same code path for backtest and live</strong>.</li>
+    </ul>
+
+    <pre><code>// Strategy never knows the risk rules
+if (riskManager.approve(order)) {
+  orderRouter.place(order);
+  notifier.send('INFO', `Filled ${order.symbol}`);
+}</code></pre>
+
+    <h2>Pre-Flight Testing</h2>
+    <ul>
+      <li><strong>Paper trade the exact deploy code</strong>, not a notebook version.</li>
+      <li><strong>Compare backtest to forward test.</strong> If they disagree, find out why before going live.</li>
+      <li><strong>Real fees in the P&L.</strong> Estimates have killed more accounts than bad signals.</li>
+      <li><strong>Test failure modes</strong>: WebSocket drop, rate limit, partial fill, rejected order.</li>
+      <li><strong>Reconcile positions on startup.</strong> Never assume you started clean.</li>
+    </ul>
+
+    <h2>Operations</h2>
+    <ul>
+      <li><strong>Secrets in env vars or a secrets manager</strong>, never in git.</li>
+      <li><strong>API keys scoped to trade only</strong>, no withdrawal permission.</li>
+      <li><strong>Write a deployment runbook.</strong> You'll need it at 2am.</li>
+      <li><strong>Process supervisor</strong> with auto-restart and backoff so a crash loop doesn't hammer the API.</li>
+    </ul>
+
+    <h2>Capital and Sizing</h2>
+    <ul>
+      <li><strong>Start with money you can lose this week.</strong> Genuinely.</li>
+      <li><strong>Define what "working" looks like before going live</strong>, so you know when it isn't.</li>
+      <li><strong>Scale up after weeks of stable behaviour</strong>, not days.</li>
+    </ul>
+
+    <h2>Legal and Tax</h2>
+    <ul>
+      <li><strong>Know your jurisdiction's rules</strong> on bot trading and derivatives.</li>
+      <li><strong>Understand how your trading gets taxed</strong> where you live.</li>
+      <li><strong>Keep a full trade log</strong> for tax and debugging.</li>
+    </ul>
+
+    <hr>
+
+    <blockquote>
+      If this bot does the worst plausible thing it could do in the next 60 minutes, what happens, and is that survivable?
+    </blockquote>
+
+    <p>
+      If you can't answer that in one sentence, you're not ready. The bots that survive aren't the ones with the best signals. They're the ones built by people who assumed everything would break, and made sure none of it could kill them when it did.
+    </p>
+
+  </main>
+
+  <script src="/assets/template.js"></script>
+</body>
+</html>
