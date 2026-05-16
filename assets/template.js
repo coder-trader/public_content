@@ -8,10 +8,16 @@
 (function () {
   const SKOOL_URL = 'https://www.skool.com/coder-trader';
 
+  // Build a relative path to the site root from the current page's location.
+  // Works whether the repo is served from / or a subdirectory like /public_content/.
+  const depth = (window.location.pathname.replace(/\/[^/]*$/, '').match(/\//g) || []).length;
+  const ROOT = depth <= 1 ? './' : '../'.repeat(depth - 1);
+  const HOME = ROOT + 'index.html';
+
   const NAVBAR_HTML = `
     <nav class="site-nav">
       <div class="site-nav__inner">
-        <a href="/index.html" class="site-nav__brand">
+        <a href="${HOME}" class="site-nav__brand">
           <span class="dot"></span>
           CODER<span style="color: var(--accent);">·</span>TRADER
         </a>
@@ -28,7 +34,7 @@
         <span class="site-footer__brand">// CODER_TRADER</span>
         <span>© ${new Date().getFullYear()} — Built for traders who code</span>
         <div class="site-footer__links">
-          <a href="/index.html">Posts</a>
+          <a href="${HOME}">Posts</a>
           <a href="${SKOOL_URL}" target="_blank" rel="noopener">Skool</a>
         </div>
       </div>
@@ -45,7 +51,7 @@
     const main = document.querySelector('main.site-main');
     if (main && main.dataset.backToContents !== undefined) {
       const back = document.createElement('a');
-      back.href = '/index.html';
+      back.href = HOME;
       back.className = 'back-link';
       back.textContent = 'Back to all posts';
       main.insertBefore(back, main.firstChild);
