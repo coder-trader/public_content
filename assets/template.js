@@ -16,7 +16,6 @@
           CODER<span style="color: var(--accent);">·</span>TRADER
         </a>
         <div class="site-nav__links">
-          <a href="/index.html">Posts</a>
           <a href="${SKOOL_URL}" class="site-nav__cta" target="_blank" rel="noopener">Join Skool</a>
         </div>
       </div>

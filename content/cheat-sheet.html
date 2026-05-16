@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trading Bot Pre-Deployment Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-card: #0f1525;
+    --bg-card-hover: #131a2e;
+    --ink: #e8ecf5;
+    --ink-dim: #9aa3b8;
+    --ink-faint: #5a6483;
+    --accent: #d4ff4a;
+    --accent-dim: #8fa830;
+    --danger: #ff5e5b;
+    --warn: #ffb547;
+    --grid-line: rgba(255,255,255,0.04);
+    --border: rgba(212, 255, 74, 0.15);
+    --border-bright: rgba(212, 255, 74, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    padding: 48px 32px;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(212, 255, 74, 0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255, 94, 91, 0.05), transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    padding: 32px 40px;
+    margin-bottom: 32px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 24px; height: 24px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 24px; height: 24px;
+    border-bottom: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+  }
+
+  .meta-row {
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.2em;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 24px;
+    text-transform: uppercase;
+  }
+
+  .meta-row .status {
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .meta-row .status::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  h1 .accent {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin-top: 16px;
+    max-width: 520px;
+    line-height: 1.5;
+  }
+
+  .header-aside {
+    text-align: right;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+  }
+
+  .header-aside .big-num {
+    font-family: 'Fraunces', serif;
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 4px;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px 22px;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--border-bright);
+    background: var(--bg-card-hover);
+  }
+
+  .card-num {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--ink-faint);
+    opacity: 0.2;
+    line-height: 1;
+  }
+
+  .card-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+
+  .card ul {
+    list-style: none;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  .card ul li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .card ul li:last-child { margin-bottom: 0; }
+
+  .card ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+    top: 1px;
+  }
+
+  .card ul li strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* FOOTER GUT-CHECK */
+  .gut-check {
+    background: var(--bg-card);
+    border: 1px solid var(--border-bright);
+    padding: 40px;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .gut-check::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(212, 255, 74, 0.06), transparent 60%);
+    pointer-events: none;
+  }
+
+  .gut-check-label {
+    font-family: 'Fraunces', serif;
+    font-size: 88px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    font-style: italic;
+  }
+
+  .gut-check-content {
+    position: relative;
+  }
+
+  .gut-check-tag {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .gut-check-q {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    line-height: 1.25;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .gut-check-a {
+    font-size: 13px;
+    color: var(--ink-dim);
+    letter-spacing: 0.02em;
+  }
+
+  .gut-check-a .danger {
+    color: var(--danger);
+    font-weight: 700;
+  }
+
+  /* SIGNATURE */
+  .signature {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    padding-top: 20px;
+    border-top: 1px solid var(--grid-line);
+  }
+
+  .signature .brand {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* TICKER STRIP */
+  .ticker {
+    display: flex;
+    gap: 32px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ticker span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ticker span::before {
+    content: '◆';
+    color: var(--accent);
+    font-size: 8px;
+  }
+</style>
+</head>
+<body>
+  <main>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="meta-row">
+        <span class="status">SYSTEM ARMED</span>
+        <span>CHEAT_SHEET.v1</span>
+        <span>PRE-DEPLOY / GO-LIVE</span>
+      </div>
+      <h1>Before you<br>press <span class="accent">start.</span></h1>
+      <p class="subtitle">The eight checks that separate bots that survive from bots that blow up. Print it. Pin it. Run through it every single deploy.</p>
+    </div>
+    <div class="header-aside">
+      <div class="big-num">08</div>
+      <div>CRITICAL<br>CHECKS</div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <span>RISK</span>
+    <span>KILL</span>
+    <span>MONITOR</span>
+    <span>STRUCTURE</span>
+    <span>TEST</span>
+    <span>OPS</span>
+    <span>CAPITAL</span>
+    <span>LEGAL</span>
+  </div>
+
+  <!-- GRID ROW 1 -->
+  <div class="grid">
+
+    <div class="card">
+      <span class="card-num">01</span>
+      <span class="card-icon">🛡️</span>
+      <div class="card-title">Risk Controls</div>
+      <ul>
+        <li><strong>Stop loss</strong> on every position, exchange-native preferred</li>
+        <li><strong>Max risk per trade</strong> enforced in code, not config</li>
+        <li><strong>Daily loss circuit breaker</strong> with manual unlock</li>
+        <li><strong>Cap</strong> concurrent positions, size, leverage</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="card-num">02</span>
+      <span class="card-icon">🛑</span>
+      <div class="card-title">Kill Switch</div>
+      <ul>
+        <li><strong>One command</strong> flattens everything</li>
+        <li><strong>Process kill</strong> in 10 seconds, no Googling</li>
+        <li><strong>Exchange app</strong> fallback on your phone</li>
+        <li><strong>Dead man's switch</strong> on missing heartbeat</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="card-num">03</span>
+      <span class="card-icon">📊</span>
+      <div class="card-title">Monitoring</div>
+      <ul>
+        <li><strong>Push alerts</strong> for fills, stops, errors</li>
+        <li><strong>Live dashboard</strong> for positions and P&L</li>
+        <li><strong>Structured logs</strong>, rotated, machine-readable</li>
+        <li><strong>Stale data</strong> detection pauses entries</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="card-num">04</span>
+      <span class="card-icon">🧱</span>
+      <div class="card-title">Code Structure</div>
+      <ul>
+        <li><strong>Exchange</strong> behind an interface</li>
+        <li><strong>Risk checks</strong> centralised, not per-strategy</li>
+        <li><strong>Decide</strong> separated from <strong>place order</strong></li>
+        <li><strong>Same code path</strong> for backtest and live</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- GRID ROW 2 -->
+  <div class="grid">
+
+    <div class="card">
+      <span class="card-num">05</span>
+      <span class="card-icon">🧪</span>
+      <div class="card-title">Pre-Flight</div>
+      <ul>
+        <li><strong>Paper trade</strong> the exact deploy code</li>
+        <li><strong>Backtest matches</strong> forward test directionally</li>
+        <li><strong>Real fees</strong> wired into P&L</li>
+        <li><strong>Reconcile</strong> positions on startup</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="card-num">06</span>
+      <span class="card-icon">⚙️</span>
+      <div class="card-title">Operations</div>
+      <ul>
+        <li><strong>Secrets</strong> in env vars, never in git</li>
+        <li><strong>API keys</strong> trade-only, no withdrawal</li>
+        <li><strong>Runbook</strong> for deploy, rollback, restart</li>
+        <li><strong>Supervisor</strong> with auto-restart and backoff</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="card-num">07</span>
+      <span class="card-icon">💰</span>
+      <div class="card-title">Capital</div>
+      <ul>
+        <li><strong>Start small</strong>, money you can lose this week</li>
+        <li><strong>Define "working"</strong> before you go live</li>
+        <li><strong>Scale up</strong> after weeks, not days</li>
+        <li><strong>Set a threshold</strong> for when to intervene</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="card-num">08</span>
+      <span class="card-icon">⚖️</span>
+      <div class="card-title">Legal & Tax</div>
+      <ul>
+        <li><strong>Local rules</strong> on bot trading and derivatives</li>
+        <li><strong>Tax treatment</strong> of your trading income</li>
+        <li><strong>Trade log</strong> with timestamps, fills, fees</li>
+        <li><strong>Get advice</strong> for your jurisdiction</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- GUT CHECK -->
+  <div class="gut-check">
+    <div class="gut-check-label">?</div>
+    <div class="gut-check-content">
+      <div class="gut-check-tag">The one-line check before you press start</div>
+      <div class="gut-check-q">"If this bot does the worst plausible thing it could do in the next 60 minutes, what happens, and is that survivable?"</div>
+      <div class="gut-check-a">If you can't answer in one sentence, <span class="danger">you're not ready.</span></div>
+    </div>
+  </div>
+
+  <!-- SIGNATURE -->
+  <div class="signature">
+    <span>// SAVE THIS. RUN IT EVERY DEPLOY.</span>
+    <span class="brand">CODER_TRADER</span>
+  </div>
+
+</div>
+
+</body>
+  </main>
+  <script src="/assets/navbar.js"></script>
+</html>
