@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The One-Person Trading Desk — Coder Trader Webinar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0a;
+    --bg-elev: #0f1410;
+    --ink: #e8f0e6;
+    --ink-dim: #8a9588;
+    --accent: #7cfc8a;
+    --accent-dim: #2d5c33;
+    --warn: #ffb547;
+    --danger: #ff5d5d;
+    --grid: rgba(124, 252, 138, 0.06);
+    --line: rgba(232, 240, 230, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter Tight', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 1;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: overlay;
+  }
+
+  .deck { position: relative; width: 100vw; height: 100vh; z-index: 3; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: clamp(28px, 4vh, 48px) clamp(36px, 5vw, 80px) clamp(72px, 10vh, 96px);
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+    animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chrome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding-bottom: clamp(14px, 2vh, 24px);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: clamp(20px, 4vh, 40px);
+    flex-shrink: 0;
+  }
+
+  .chrome .brand { display: flex; align-items: center; gap: 12px; }
+
+  .chrome .dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .chrome .rec { color: var(--accent); }
+
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: clamp(16px, 2.5vh, 28px);
+  }
+
+  h1.display {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(48px, min(9vw, 13vh), 120px);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+  }
+
+  h1.display em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(36px, min(5.5vw, 8.5vh), 72px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  h2 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding-top: clamp(14px, 2vh, 24px);
+    border-top: 1px solid var(--line);
+    margin-top: clamp(18px, 3vh, 36px);
+    flex-shrink: 0;
+  }
+
+  .cover-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-top: clamp(20px, 3.5vh, 40px);
+    line-height: 1.6;
+  }
+  .cover-meta span { color: var(--accent); }
+
+  .price-tag {
+    font-family: 'JetBrains Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(124, 252, 138, 0.08);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    margin-bottom: clamp(20px, 3.5vh, 32px);
+    text-transform: uppercase;
+  }
+
+  .pull-quote {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(32px, min(5vw, 7.5vh), 64px);
+    line-height: 1.1;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    max-width: 1200px;
+  }
+
+  .pull-quote em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .quote-mark {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(80px, 12vw, 160px);
+    line-height: 0.5;
+    color: var(--accent);
+    opacity: 0.25;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .mega-word {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(72px, min(14vw, 18vh), 200px);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+  }
+
+  .mega-word em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: clamp(24px, 4vh, 48px);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .role {
+    padding: clamp(18px, 2.5vh, 28px) 20px;
+    border-right: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .role:last-child { border-right: none; }
+
+  .role-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+
+  .role-name {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 600;
+  }
+
+  .role.you {
+    background: rgba(124, 252, 138, 0.05);
+  }
+
+  .role.you .role-icon { color: var(--accent); }
+  .role.you .role-name { color: var(--accent); }
+
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    margin-top: clamp(20px, 3vh, 32px);
+    align-items: stretch;
+  }
+
+  .vs-col {
+    padding: clamp(20px, 3vh, 32px);
+    border: 1px solid var(--line);
+  }
+
+  .vs-col.old { opacity: 0.5; }
+
+  .vs-col.new {
+    border-color: var(--accent-dim);
+    background: rgba(124, 252, 138, 0.04);
+  }
+
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+  }
+
+  .vs-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: clamp(14px, 2vh, 20px);
+  }
+
+  .vs-col.new .vs-label { color: var(--accent); }
+
+  .vs-list { list-style: none; }
+
+  .vs-list li {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    padding: clamp(7px, 1.2vh, 12px) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .vs-list li:last-child { border-bottom: none; }
+
+  .code-block {
+    background: #050805;
+    border: 1px solid var(--line);
+    padding: clamp(22px, 3vh, 36px) clamp(24px, 3vw, 40px);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(14px, 1.4vw, 18px);
+    line-height: 1.7;
+    margin: clamp(16px, 2.5vh, 24px) 0;
+    position: relative;
+  }
+
+  .code-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .code-block .label {
+    position: absolute;
+    top: 14px; right: 18px;
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .tok-key { color: #c792ea; }
+  .tok-str { color: #ffb547; }
+  .tok-num { color: #7cfc8a; }
+  .tok-com { color: var(--ink-dim); font-style: italic; }
+  .tok-fn  { color: #82aaff; }
+
+  .step-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    margin-top: clamp(24px, 4vh, 40px);
+  }
+
+  .step {
+    text-align: center;
+    padding: clamp(18px, 2.5vh, 28px) 16px;
+    border-right: 1px solid var(--line);
+  }
+
+  .step:last-child { border-right: none; }
+
+  .step-num {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(40px, 5vw, 56px);
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .step-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(16px, 1.6vw, 20px);
+    margin-top: 12px;
+    font-weight: 500;
+  }
+
+  .gift-box {
+    border: 2px solid var(--accent);
+    padding: clamp(32px, 5vh, 56px);
+    text-align: center;
+    background: rgba(124, 252, 138, 0.04);
+    position: relative;
+    box-shadow: 0 0 80px rgba(124, 252, 138, 0.15);
+  }
+
+  .gift-box::before {
+    content: 'FREE BONUS';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    padding: 4px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+  }
+
+  .gift-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, min(5.5vw, 8vh), 72px);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  .gift-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .inside-list {
+    list-style: none;
+    margin-top: clamp(20px, 3vh, 32px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 clamp(32px, 5vw, 64px);
+  }
+
+  .inside-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: clamp(10px, 1.6vh, 16px) 0;
+    border-bottom: 1px solid var(--line);
+    font-family: 'Fraunces', serif;
+    font-size: clamp(15px, 1.6vw, 20px);
+    font-weight: 500;
+  }
+
+  .inside-list li::before {
+    content: '✓';
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .cta-frame { text-align: center; padding: 32px 0; }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: clamp(18px, 2.8vh, 28px) clamp(36px, 5vw, 56px);
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(14px, 1.6vw, 18px);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: clamp(24px, 4vh, 40px);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 80px rgba(124, 252, 138, 0.35);
+  }
+
+  .cta-button::after { content: '→'; font-size: 24px; }
+
+  .ticker-tape {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--line);
+    padding: 10px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    overflow: hidden;
+    z-index: 100;
+    white-space: nowrap;
+  }
+
+  .ticker-content {
+    display: inline-block;
+    animation: scroll 60s linear infinite;
+    padding-left: 100%;
+  }
+
+  .ticker-content span { margin-right: 48px; color: var(--ink-dim); }
+  .ticker-content span.up { color: var(--accent); }
+  .ticker-content span.down { color: var(--danger); }
+
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+
+  .nav {
+    position: fixed;
+    bottom: 50px;
+    right: 32px;
+    display: flex;
+    gap: 8px;
+    z-index: 200;
+  }
+
+  .nav button {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    width: 44px; height: 44px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .nav button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .slide-counter {
+    position: fixed;
+    bottom: 58px;
+    left: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    z-index: 200;
+  }
+  .slide-counter span { color: var(--accent); }
+
+  .highlight {
+    border: 1px solid var(--accent-dim);
+    background: rgba(124, 252, 138, 0.04);
+    padding: clamp(20px, 3vh, 32px) clamp(22px, 3vw, 36px);
+    margin-top: clamp(24px, 4vh, 40px);
+    position: relative;
+  }
+
+  .highlight::before {
+    content: 'THE SHIFT';
+    position: absolute;
+    top: -10px;
+    left: 24px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+  }
+
+  .highlight p {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(18px, 2.2vw, 26px);
+    line-height: 1.35;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .section-marker { text-align: center; padding: clamp(40px, 8vh, 80px) 0; }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    margin-bottom: clamp(20px, 3.5vh, 32px);
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(44px, min(7vw, 11vh), 96px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr 60px 1fr;
+    gap: 0;
+    margin-top: clamp(28px, 4.5vh, 48px);
+    align-items: stretch;
+  }
+
+  .flow-step {
+    border: 1px solid var(--line);
+    padding: clamp(18px, 2.6vh, 28px);
+    text-align: center;
+  }
+
+  .flow-step.highlight-step {
+    border-color: var(--accent-dim);
+    background: rgba(124, 252, 138, 0.05);
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 20px;
+  }
+
+  .flow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+  }
+
+  .flow-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 500;
+  }
+
+  /* ----- LINK BLOCK ----- */
+  .link-block {
+    background: #050805;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    margin-top: clamp(24px, 4vh, 40px);
+    position: relative;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(11px, 1.1vw, 14px);
+    line-height: 1.75;
+  }
+
+  .link-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .link-block__label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .link-block__copy {
+    background: transparent;
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    padding: 5px 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .link-block__copy:hover {
+    background: rgba(124, 252, 138, 0.08);
+    border-color: var(--accent);
+  }
+
+  .link-block__copy.copied {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .link-block__code {
+    padding: clamp(16px, 2.5vh, 24px) 20px;
+  }
+
+  .link-line {
+    display: block;
+  }
+
+  .link-line .tok-com {
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  .link-line a {
+    color: var(--accent);
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .link-line a:hover {
+    text-decoration: underline;
+  }
+
+  .link-group + .link-group {
+    margin-top: clamp(12px, 2vh, 20px);
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1. COVER / HOOK -->
+  <section class="slide active">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> CODER_TRADER / LIVE WEBINAR</div>
+      <div><span class="rec">● REC</span> &nbsp; 00:00:00</div>
+    </div>
+    <div class="body">
+      <div class="price-tag">◆ FOR TRADERS WHO WANT THEIR LIFE BACK</div>
+      <h1 class="display">The One-Person<br>Trading Desk<em>.</em></h1>
+      <div class="cover-meta">
+        How to build, test and run a trading system <span>using AI</span><br>
+        the same way a 30-person quant team would
+      </div>
+    </div>
+    <div class="foot">
+      <span>PRESS → TO BEGIN</span>
+      <span>CODER.TRADER</span>
+    </div>
+  </section>
+
+  <!-- 2. THE PROMISE / BIG IDEA -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> WHAT YOU GET TODAY</div>
+      <div>02</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// stay till the end</div>
+      <h2>By the time we're done<br>you'll have a <em>free checklist</em><br>that walks you through<br>every step.</h2>
+    </div>
+    <div class="foot">
+      <span>02 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 3. WHO AM I -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> WHO'S TALKING TO YOU</div>
+      <div>03</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// quick intro</div>
+      <h2>Ex-quant developer.<br>Built trading systems<br>for a living.</h2>
+      <div class="roles">
+        <div class="role">
+          <div class="role-icon">// FINANCE</div>
+          <div class="role-name">Algo Trader</div>
+        </div>
+        <div class="role">
+          <div class="role-icon">// FINANCE</div>
+          <div class="role-name">Quant Developer</div>
+        </div>
+        <div class="role">
+          <div class="role-icon">// NOW</div>
+          <div class="role-name">System Builder</div>
+        </div>
+        <div class="role you">
+          <div class="role-icon">// THIS YEAR</div>
+          <div class="role-name">Helping You</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>03 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 4. HOW IT USED TO WORK (THE OLD WAY) -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> HOW A TRADING SYSTEM GETS BUILT</div>
+      <div>04</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// the old way</div>
+      <h2>Building a trading system<br>used to take <em>a whole team</em>.</h2>
+      <div class="roles" style="margin-top: 48px;">
+        <div class="role">
+          <div class="role-icon">// 01</div>
+          <div class="role-name">Quants</div>
+        </div>
+        <div class="role">
+          <div class="role-icon">// 02</div>
+          <div class="role-name">Developers</div>
+        </div>
+        <div class="role">
+          <div class="role-icon">// 03</div>
+          <div class="role-name">Traders</div>
+        </div>
+        <div class="role">
+          <div class="role-icon">// 04</div>
+          <div class="role-name">QA Team</div>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 40px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-dim); letter-spacing: 0.15em;">MATHS → CODE → ALIGN WITH MARKET → TEST → DEPLOY</p>
+    </div>
+    <div class="foot">
+      <span>04 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 5. THE LIGHTBULB -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> THE MOMENT EVERYTHING CHANGED</div>
+      <div>05</div>
+    </div>
+    <div class="body">
+      <span class="quote-mark">"</span>
+      <p class="pull-quote">Then it hit me. <em>One person</em> can do all of that now. AI plays every role on the team.</p>
+    </div>
+    <div class="foot">
+      <span>05 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 6. OLD WAY VS NEW WAY -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> THE NEW LANDSCAPE</div>
+      <div>06</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// then vs now</div>
+      <h2>Same job.<br><em>One person</em>.</h2>
+      <div class="vs-grid">
+        <div class="vs-col old">
+          <div class="vs-label">THE OLD WAY</div>
+          <ul class="vs-list">
+            <li>Quant team</li>
+            <li>Dev team</li>
+            <li>Trader feedback loop</li>
+            <li>QA team</li>
+            <li>Months of meetings</li>
+          </ul>
+        </div>
+        <div class="vs-divider">→</div>
+        <div class="vs-col new">
+          <div class="vs-label">THE NEW WAY</div>
+          <ul class="vs-list">
+            <li>You</li>
+            <li>+ AI</li>
+            <li>+ A clear process</li>
+            <li>&nbsp;</li>
+            <li>Days, not months</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>06 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 7. WHY AUTOMATION (THE BIG DOMINO) -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> THE BIG DOMINO</div>
+      <div>07</div>
+    </div>
+    <div class="body">
+      <div class="mega-word">Automation<br><em>wins</em>.</div>
+      <div class="highlight" style="margin-top: 48px; max-width: 900px;">
+        <p>Manual traders burn out. Automated systems compound. The traders who win this decade are the ones who let AI do the work.</p>
+      </div>
+    </div>
+    <div class="foot">
+      <span>07 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 8. SECTION DIVIDER -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> THE FRAMEWORK</div>
+      <div>08</div>
+    </div>
+    <div class="body">
+      <div class="section-marker">
+        <div class="section-num">SO HERE'S HOW</div>
+        <div class="section-title">5 steps.<br>One system.</div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>08 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 9. THE 5 STEPS -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> YOUR AI TRADING STACK</div>
+      <div>09</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// the framework</div>
+      <h2>Every system you<br>build follows <em>these five</em>.</h2>
+      <div class="step-grid">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Strategy</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">Data</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">Code</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-title">Risk</div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-title">Deploy</div>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 48px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-dim); letter-spacing: 0.15em;">AI HELPS YOU IN EVERY SINGLE ONE OF THESE</p>
+    </div>
+    <div class="foot">
+      <span>09 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 10. DEMO SETUP -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> LIVE DEMO COMING UP</div>
+      <div>10</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// watch this</div>
+      <h2>Let me show you<br>step <em>3</em>.</h2>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-label">// INPUT</div>
+          <div class="flow-title">One AI prompt</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step highlight-step">
+          <div class="flow-label">// MIDDLE</div>
+          <div class="flow-title">Working Python</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-label">// OUTPUT</div>
+          <div class="flow-title">Live BTC price</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>10 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 11. THE PROMPT -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> THE PROMPT I'M ABOUT TO USE</div>
+      <div>11</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// type this into AI</div>
+      <div class="code-block">
+        <span class="label">PROMPT</span>
+<pre style="margin:0; font-family: inherit; color: var(--ink); font-size: clamp(13px, 1.4vw, 18px); line-height: 1.6;">Write Python using the <span class="tok-num">ccxt</span> library to fetch
+the live price of <span class="tok-num">BTC/USDT</span>, <span class="tok-num">ETH/USDT</span>, and <span class="tok-num">SOL/USDT</span>
+from Binance every <span class="tok-num">2</span> seconds.
+
+Display the results in a <span class="tok-fn">Streamlit</span> table that
+shows symbol, price, and last-updated time.
+The table should <span class="tok-str">auto-refresh</span> without reloading
+the whole page.</pre>
+      </div>
+      <p style="margin-top: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-dim); letter-spacing: 0.15em; text-align: center;">→ SWITCH TO LIVE SCREEN ←</p>
+    </div>
+    <div class="foot">
+      <span>11 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 12. WHAT JUST HAPPENED -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> WHAT YOU JUST SAW</div>
+      <div>12</div>
+    </div>
+    <div class="body">
+      <span class="quote-mark">"</span>
+      <p class="pull-quote">That would take a <em>professional developer</em> three hours. You watched it happen in 60 seconds.</p>
+    </div>
+    <div class="foot">
+      <span>12 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 13. THE GAP -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> THE HONEST PART</div>
+      <div>13</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// here's the catch</div>
+      <h2>AI is the engine.<br>You still need<br><em>the map</em>.</h2>
+      <p style="font-family: 'Fraunces', serif; font-size: 26px; margin-top: 40px; max-width: 900px; line-height: 1.4; color: var(--ink-dim);">Knowing what to prompt, in what order, with what guardrails, is what separates a real system from a script that breaks on Monday morning.</p>
+    </div>
+    <div class="foot">
+      <span>13 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 14. THE GIFT REVEAL -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> AS PROMISED / YOUR FREE GIFT</div>
+      <div>14</div>
+    </div>
+    <div class="body">
+      <div class="gift-box">
+        <div class="gift-title">The AI Trading<br>System <em>Checklist</em>.</div>
+        <p style="margin-top: 24px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ink-dim); letter-spacing: 0.15em; text-transform: uppercase;">Everything in one PDF. Yours, free.</p>
+      </div>
+    </div>
+    <div class="foot">
+      <span>14 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 15. WHAT'S INSIDE THE CHECKLIST -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> WHAT'S INSIDE</div>
+      <div>15</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// what you get</div>
+      <h2>Every step.<br><em>Every prompt</em>.</h2>
+      <ul class="inside-list">
+        <li>The full 5-step build process</li>
+        <li>Plug-and-play AI prompts</li>
+        <li>Risk management rules</li>
+        <li>Position sizing formulas</li>
+        <li>Backtesting checklist</li>
+        <li>Deployment checklist</li>
+        <li>What to do when it breaks</li>
+        <li>Live monitoring setup</li>
+      </ul>
+    </div>
+    <div class="foot">
+      <span>15 / 16</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+  <!-- 16. CTA -->
+  <section class="slide">
+    <div class="chrome">
+      <div class="brand"><span class="dot"></span> GRAB YOUR COPY</div>
+      <div>16</div>
+    </div>
+    <div class="body">
+      <div class="eyebrow">// paste these into your browser — links are live now</div>
+      <h1 class="display" style="font-size: clamp(44px, 6vw, 88px);">Get the<br><em>resources</em>.</h1>
+
+      <div class="link-block">
+        <div class="link-block__header">
+          <span class="link-block__label">// coder-trader.github.io/public_content</span>
+          <button class="link-block__copy" id="copyBtn" onclick="copyLinks()">COPY ALL</button>
+        </div>
+        <div class="link-block__code">
+          <div class="link-group">
+            <span class="link-line"><span class="tok-com">// full checklist — 11 phases, 90+ items</span></span>
+            <span class="link-line"><a href="https://coder-trader.github.io/public_content/content/ai_trading_bot_checklist.html" target="_blank">https://coder-trader.github.io/public_content/content/ai_trading_bot_checklist.html</a></span>
+          </div>
+          <div class="link-group">
+            <span class="link-line"><span class="tok-com">// pre-deployment checklist — 8 checks before you go live</span></span>
+            <span class="link-line"><a href="https://coder-trader.github.io/public_content/content/pre-deployment-checklist.html" target="_blank">https://coder-trader.github.io/public_content/content/pre-deployment-checklist.html</a></span>
+          </div>
+          <div class="link-group">
+            <span class="link-line"><span class="tok-com">// cheat sheet — one page, print it, pin it</span></span>
+            <span class="link-line"><a href="https://coder-trader.github.io/public_content/content/cheat-sheet.html" target="_blank">https://coder-trader.github.io/public_content/content/cheat-sheet.html</a></span>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: clamp(20px, 3vh, 36px); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-dim); letter-spacing: 0.25em;">CODER.TRADER &nbsp; / &nbsp; SEE YOU INSIDE</p>
+    </div>
+    <div class="foot">
+      <span>16 / 16 — END</span>
+      <span>CODER_TRADER</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="ticker-tape">
+  <div class="ticker-content">
+    <span class="up">BTC/USDT  64,521.34 ▲ 2.14%</span>
+    <span class="down">ETH/USDT  3,142.88 ▼ 0.42%</span>
+    <span class="up">SOL/USDT  152.66 ▲ 4.81%</span>
+    <span>SPY  521.04 +0.18%</span>
+    <span class="up">NVDA  892.50 ▲ 1.92%</span>
+    <span class="down">TSLA  248.12 ▼ 1.05%</span>
+    <span>AAPL  189.84 +0.22%</span>
+    <span class="up">GOLD  2,340.10 ▲ 0.61%</span>
+    <span class="up">BTC/USDT  64,521.34 ▲ 2.14%</span>
+    <span class="down">ETH/USDT  3,142.88 ▼ 0.42%</span>
+    <span class="up">SOL/USDT  152.66 ▲ 4.81%</span>
+    <span>SPY  521.04 +0.18%</span>
+    <span class="up">NVDA  892.50 ▲ 1.92%</span>
+  </div>
+</div>
+
+<div class="slide-counter"><span id="current">01</span> / <span id="total">16</span></div>
+
+<div class="nav">
+  <button id="prev">←</button>
+  <button id="next">→</button>
+</div>
+
+<script>
+  function copyLinks() {
+    const links = [
+      'https://coder-trader.github.io/public_content/content/ai_trading_bot_checklist.html',
+      'https://coder-trader.github.io/public_content/content/pre-deployment-checklist.html',
+      'https://coder-trader.github.io/public_content/content/cheat-sheet.html',
+    ].join('\n');
+
+    const btn = document.getElementById('copyBtn');
+    const confirm = () => {
+      btn.textContent = 'COPIED ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY ALL'; btn.classList.remove('copied'); }, 2500);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(links).then(confirm).catch(() => fallbackCopy(links, confirm));
+    } else {
+      fallbackCopy(links, confirm);
+    }
+  }
+
+  function fallbackCopy(text, callback) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); callback(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  document.getElementById('total').textContent = String(total).padStart(2, '0');
+
+  function show(idx) {
+    slides.forEach(s => s.classList.remove('active'));
+    current = (idx + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('current').textContent = String(current + 1).padStart(2, '0');
+  }
+
+  document.getElementById('next').addEventListener('click', () => show(current + 1));
+  document.getElementById('prev').addEventListener('click', () => show(current - 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      show(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      show(current - 1);
+    } else if (e.key === 'Home') {
+      show(0);
+    } else if (e.key === 'End') {
+      show(total - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+</script>
+
+</body>
+</html>
