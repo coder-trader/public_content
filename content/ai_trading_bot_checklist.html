@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AI Trading Bot Checklist — Coder Trader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --bg-elev: #14171c;
+    --bg-card: #161a20;
+    --border: #242a32;
+    --border-bright: #3a4250;
+    --text: #e6e8eb;
+    --text-dim: #8b94a3;
+    --text-faint: #5b6370;
+    --accent: #7dd3a0;
+    --accent-dim: #4a8a66;
+    --warn: #e8b86a;
+    --danger: #e87a6a;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(125, 211, 160, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 100%, rgba(125, 168, 211, 0.04) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+
+  /* ----- HEADER ----- */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(13, 15, 18, 0.9);
+    backdrop-filter: blur(14px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .logo::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    margin-right: 8px;
+    vertical-align: middle;
+    animation: blink 1.2s steps(2) infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0.2; } }
+
+  .nav-cta {
+    color: var(--bg);
+    background: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 3px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .nav-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(125, 211, 160, 0.25);
+  }
+
+  .nav-cta::before {
+    content: '→ ';
+    margin-right: 2px;
+  }
+
+  /* ----- HERO ----- */
+  .hero {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 80px 48px 40px;
+  }
+
+  .breadcrumb {
+    color: var(--text-faint);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .breadcrumb span { color: var(--accent); }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(40px, 5.5vw, 64px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  h1 .highlight {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 680px;
+    margin-bottom: 16px;
+    line-height: 1.55;
+  }
+
+  .meta-line {
+    color: var(--text-faint);
+    font-size: 13px;
+    margin-bottom: 48px;
+  }
+
+  .meta-line .dot { color: var(--accent); margin: 0 8px; }
+
+  /* ----- INTRO BLOCK ----- */
+  .intro {
+    max-width: 920px;
+    margin: 0 auto 56px;
+    padding: 0 48px;
+  }
+
+  .intro-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 28px 32px;
+  }
+
+  .intro-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .intro-card p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .intro-card p + p {
+    margin-top: 12px;
+  }
+
+  /* ----- PHASES ----- */
+  .content {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 48px 80px;
+  }
+
+  .phase {
+    margin-bottom: 56px;
+    scroll-margin-top: 100px;
+  }
+
+  .phase-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phase-number {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+  }
+
+  .phase h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .phase h2 .italic {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .phase-subtitle {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .phase h3 {
+    font-family: var(--mono);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    margin: 32px 0 16px;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .phase p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  /* ----- CHECKLIST ----- */
+  .checklist {
+    list-style: none;
+    margin: 0 0 16px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist li:hover .check-box {
+    border-color: var(--accent);
+  }
+
+  .check-box {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border-bright);
+    border-radius: 3px;
+    margin-top: 4px;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .checklist li.checked .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checklist li.checked .check-box::after {
+    content: '✓';
+    position: absolute;
+    top: -3px;
+    left: 1px;
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .checklist li.checked {
+    color: var(--text-faint);
+    text-decoration: line-through;
+  }
+
+  /* ----- QUOTE / PROMPT BLOCKS ----- */
+  .prompt-block {
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    margin: 16px 0;
+    border-radius: 0 3px 3px 0;
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .prompt-block::before {
+    content: '// example prompt';
+    display: block;
+    font-style: normal;
+    color: var(--accent);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  /* ----- CODE STEPS ----- */
+  .code-steps {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .code-steps .step {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 6px 0;
+    line-height: 1.6;
+  }
+
+  .code-steps .step strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ----- WARNINGS ----- */
+  .warnings {
+    background: linear-gradient(180deg, rgba(232, 122, 106, 0.04) 0%, rgba(232, 122, 106, 0.01) 100%);
+    border: 1px solid rgba(232, 122, 106, 0.2);
+    border-radius: 4px;
+    padding: 32px;
+    margin: 56px 0;
+  }
+
+  .warnings .label {
+    color: var(--danger);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 12px;
+  }
+
+  .warnings h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 24px;
+    margin: 0 0 16px;
+    padding: 0;
+    border: none;
+    letter-spacing: -0.01em;
+  }
+
+  .warnings ul {
+    list-style: none;
+  }
+
+  .warnings li {
+    color: var(--text);
+    font-size: 14px;
+    padding: 8px 0;
+    padding-left: 24px;
+    position: relative;
+    line-height: 1.55;
+  }
+
+  .warnings li::before {
+    content: '!';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    color: var(--danger);
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+
+  /* ----- CLOSING CTA ----- */
+  .closing {
+    max-width: 920px;
+    margin: 0 auto 80px;
+    padding: 0 48px;
+    text-align: center;
+  }
+
+  .closing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 48px 36px;
+  }
+
+  .closing-card .tag {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 12px;
+  }
+
+  .closing-card h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 32px;
+    letter-spacing: -0.015em;
+    margin-bottom: 12px;
+    padding: 0;
+    border: none;
+  }
+
+  .closing-card p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 24px;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .closing-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 14px 32px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 3px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .closing-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(125, 211, 160, 0.25);
+  }
+
+  /* ----- FOOTER ----- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    max-width: 1280px;
+    margin: 0 auto;
+    color: var(--text-faint);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ----- RESPONSIVE ----- */
+  @media (max-width: 640px) {
+    header { padding: 16px 20px; }
+    .nav-cta { padding: 8px 14px; font-size: 12px; }
+    .hero { padding: 48px 20px 32px; }
+    .intro { padding: 0 20px; margin-bottom: 40px; }
+    .intro-card { padding: 22px 20px; }
+    .content { padding: 0 20px 40px; }
+    .phase h2 { font-size: 28px; }
+    .warnings { padding: 24px 20px; }
+    .closing { padding: 0 20px; }
+    .closing-card { padding: 32px 22px; }
+    .closing-card h3 { font-size: 24px; }
+    footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="https://www.skool.com/about" class="logo" target="_blank" rel="noopener">$ coder_trader</a>
+  <a href="https://www.skool.com/about" class="nav-cta" target="_blank" rel="noopener">join the community</a>
+</header>
+
+<section class="hero">
+  <div class="breadcrumb">// resources <span>/ ai_trading_bot_checklist</span></div>
+  <h1>The AI Trading Bot <span class="highlight">Checklist</span>.</h1>
+  <p class="subtitle">From idea to live deployment, with prompting strategies for AI-assisted development. The practical guide for builders who want their bot to survive the real market.</p>
+  <p class="meta-line">11 phases <span class="dot">·</span> 90+ items <span class="dot">·</span> click to check off as you go</p>
+</section>
+
+<section class="intro">
+  <div class="intro-card">
+    <div class="label">// before you start</div>
+    <p>Most trading bots fail. Not because the strategy was wrong, but because the operational side got ignored. This checklist covers everything that actually matters, including how to prompt AI effectively when you're building most of the code with help from Claude, ChatGPT, or similar tools.</p>
+    <p>Work through each phase in order. Skipping ahead is how bots lose money.</p>
+  </div>
+</section>
+
+<section class="content">
+
+  <!-- PHASE 1 -->
+  <article class="phase" id="phase-1">
+    <div class="phase-header">
+      <div class="phase-number">phase_01</div>
+      <h2>Strategy and <span class="italic">foundation</span></h2>
+    </div>
+
+    <h3>Define your trading approach</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Identify the market you'll trade (crypto, forex, stocks, futures)</span></li>
+      <li><div class="check-box"></div><span>Choose your strategy type (trend-following, mean reversion, arbitrage, market making, momentum)</span></li>
+      <li><div class="check-box"></div><span>Define your time frame (scalping, day trading, swing, long-term)</span></li>
+      <li><div class="check-box"></div><span>Set clear entry and exit criteria</span></li>
+      <li><div class="check-box"></div><span>Document your risk tolerance and maximum drawdown</span></li>
+    </ul>
+
+    <h3>Set realistic expectations</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Calculate target returns based on strategy</span></li>
+      <li><div class="check-box"></div><span>Define what success looks like for your bot</span></li>
+      <li><div class="check-box"></div><span>Accept that most bots fail in live trading even when they backtest well</span></li>
+      <li><div class="check-box"></div><span>Plan for 6 to 12 months of refinement before expecting consistent results</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 2 -->
+  <article class="phase" id="phase-2">
+    <div class="phase-header">
+      <div class="phase-number">phase_02</div>
+      <h2>Data and <span class="italic">research</span></h2>
+    </div>
+
+    <h3>Data acquisition</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Source historical market data (clean, complete, high quality)</span></li>
+      <li><div class="check-box"></div><span>Identify data providers (Binance API, Alpha Vantage, Polygon, IEX, CCXT)</span></li>
+      <li><div class="check-box"></div><span>Ensure data covers different market conditions (bull, bear, sideways, high volatility)</span></li>
+      <li><div class="check-box"></div><span>Plan for real-time data feeds for live trading</span></li>
+      <li><div class="check-box"></div><span>Build a data validation pipeline to catch missing or corrupted data</span></li>
+    </ul>
+
+    <h3>Feature engineering</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Decide which technical indicators to use (RSI, MACD, moving averages, volume)</span></li>
+      <li><div class="check-box"></div><span>Consider fundamental data if relevant</span></li>
+      <li><div class="check-box"></div><span>Include sentiment analysis (news, social media) if applicable</span></li>
+      <li><div class="check-box"></div><span>Engineer custom features specific to your strategy</span></li>
+      <li><div class="check-box"></div><span>Test feature importance before including them</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 3 -->
+  <article class="phase" id="phase-3">
+    <div class="phase-header">
+      <div class="phase-number">phase_03</div>
+      <h2>AI architecture <span class="italic">(SOLID)</span></h2>
+      <p class="phase-subtitle">Design for extensibility from day one. You'll thank yourself later.</p>
+    </div>
+
+    <h3>Design with extensibility in mind</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Define interfaces for data sources so you can swap providers later</span></li>
+      <li><div class="check-box"></div><span>Create interfaces for strategy execution so different strategies plug in</span></li>
+      <li><div class="check-box"></div><span>Build interfaces for risk management modules</span></li>
+      <li><div class="check-box"></div><span>Separate concerns: data layer, strategy layer, execution layer, monitoring layer</span></li>
+      <li><div class="check-box"></div><span>Use dependency injection so components can be tested independently</span></li>
+    </ul>
+
+    <h3>Choose your AI approach</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Decide between supervised learning, reinforcement learning, or ensemble methods</span></li>
+      <li><div class="check-box"></div><span>Consider model types: LSTM, transformers, random forests, XGBoost, neural networks</span></li>
+      <li><div class="check-box"></div><span>Start simple before going complex (a basic model often beats overfit complex ones)</span></li>
+      <li><div class="check-box"></div><span>Plan for model versioning and rollback capability</span></li>
+    </ul>
+
+    <h3>Model training</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Split data properly (train, validation, test, ideally with walk-forward analysis)</span></li>
+      <li><div class="check-box"></div><span>Avoid look-ahead bias at all costs</span></li>
+      <li><div class="check-box"></div><span>Handle class imbalance if predicting direction</span></li>
+      <li><div class="check-box"></div><span>Cross-validate across different market regimes</span></li>
+      <li><div class="check-box"></div><span>Document hyperparameters and training conditions</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 4 - PROMPTING -->
+  <article class="phase" id="phase-4">
+    <div class="phase-header">
+      <div class="phase-number">phase_04</div>
+      <h2>Prompting AI to <span class="italic">build your code</span></h2>
+      <p class="phase-subtitle">This is the section most people get wrong. If you're using AI to build the majority of your bot, how you prompt determines whether you end up with clean, extensible code or a tangled mess you can't maintain.</p>
+    </div>
+
+    <h3>Start with architecture, not code</h3>
+    <p>Before asking AI to write a single line, prompt it to design the structure first.</p>
+    <div class="prompt-block">
+      "I want to build a trading bot for [market] using [strategy]. Before writing any code, design the architecture using SOLID principles. Show me the main interfaces, classes, and how they interact. Explain how each component can be extended later without breaking the others."
+    </div>
+    <p>Get the AI to commit to the architecture before generating implementations. This prevents tightly coupled code that becomes impossible to modify.</p>
+
+    <h3>Define your interfaces first</h3>
+    <p>Ask the AI to write the interfaces (abstract base classes in Python, interfaces in TypeScript) before any concrete implementations.</p>
+    <div class="prompt-block">
+      "Write the interfaces for: DataProvider, Strategy, RiskManager, OrderExecutor, and PerformanceTracker. Each should be designed so I can have multiple implementations later. Include docstrings explaining the contract each interface enforces."
+    </div>
+
+    <h3>Provide context aggressively</h3>
+    <p>AI generates better code when it knows the full picture. Include:</p>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Your overall goal and strategy</span></li>
+      <li><div class="check-box"></div><span>The languages and libraries you're using</span></li>
+      <li><div class="check-box"></div><span>Existing code (paste it in, don't just describe it)</span></li>
+      <li><div class="check-box"></div><span>Constraints (latency, broker API limits, data format)</span></li>
+      <li><div class="check-box"></div><span>The SOLID principle you want enforced</span></li>
+    </ul>
+
+    <h3>Prompt for one component at a time</h3>
+    <p>Don't ask for the entire bot in one prompt. You'll get something that looks impressive but is impossible to debug.</p>
+    <div class="prompt-block">
+      "Now implement the BinanceDataProvider class that conforms to the DataProvider interface we defined earlier. It should handle rate limiting, automatic reconnection, and return data in the format the interface specifies."
+    </div>
+
+    <h3>The prompting pattern for new strategies</h3>
+    <p>When you have a strategy idea and want AI to build it, use this template:</p>
+    <div class="code-steps">
+      <div class="step"><strong>1. Context:</strong> "I'm building a [type] trading bot for [market]."</div>
+      <div class="step"><strong>2. Goal:</strong> "I want to test this strategy: [describe in plain English]."</div>
+      <div class="step"><strong>3. Constraints:</strong> "It must follow SOLID principles, depend on the Strategy interface, and not couple to any specific data provider."</div>
+      <div class="step"><strong>4. Output:</strong> "Return only the strategy class and its unit tests."</div>
+      <div class="step"><strong>5. Verify:</strong> "Explain how each SOLID principle was applied."</div>
+    </div>
+
+    <h3>Force the AI to explain its decisions</h3>
+    <p>After receiving code, prompt it to justify the design:</p>
+    <div class="prompt-block">
+      "Walk me through this code. Explain why you structured it this way, what could break it, and where I'd extend it to add [feature]."
+    </div>
+    <p>If the AI can't explain it cleanly, the code is probably bad.</p>
+
+    <h3>Ask for tests with every component</h3>
+    <p>Always include this in your prompts:</p>
+    <div class="prompt-block">
+      "Include unit tests using pytest. Mock external dependencies. Test edge cases including: empty data, malformed data, network failures, and rate limit errors."
+    </div>
+
+    <h3>Use AI to review its own code</h3>
+    <p>After getting an implementation, start a fresh conversation and prompt:</p>
+    <div class="prompt-block">
+      "Review this trading bot code. Look for: violations of SOLID principles, security issues with API keys, missing error handling, race conditions, and any way this could lose money unexpectedly."
+    </div>
+
+    <h3>Watch for these AI mistakes</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Hardcoded values that should be configuration</span></li>
+      <li><div class="check-box"></div><span>Direct API calls inside strategy logic (breaks dependency inversion)</span></li>
+      <li><div class="check-box"></div><span>Missing error handling on network requests</span></li>
+      <li><div class="check-box"></div><span>No logging of decisions</span></li>
+      <li><div class="check-box"></div><span>Tightly coupled classes that import each other</span></li>
+      <li><div class="check-box"></div><span>Magic numbers without explanation</span></li>
+      <li><div class="check-box"></div><span>Synchronous code where async is needed</span></li>
+      <li><div class="check-box"></div><span>No input validation on market data</span></li>
+    </ul>
+
+    <h3>Build your prompting library</h3>
+    <p>Save prompts that work. You'll reuse them constantly:</p>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Strategy implementation prompt</span></li>
+      <li><div class="check-box"></div><span>Risk module prompt</span></li>
+      <li><div class="check-box"></div><span>Backtest engine prompt</span></li>
+      <li><div class="check-box"></div><span>Error handling review prompt</span></li>
+      <li><div class="check-box"></div><span>Security audit prompt</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 5 -->
+  <article class="phase" id="phase-5">
+    <div class="phase-header">
+      <div class="phase-number">phase_05</div>
+      <h2>Backtesting</h2>
+    </div>
+
+    <h3>Build a robust backtest engine</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Include realistic slippage estimates</span></li>
+      <li><div class="check-box"></div><span>Account for trading fees and commissions</span></li>
+      <li><div class="check-box"></div><span>Model spread costs accurately</span></li>
+      <li><div class="check-box"></div><span>Include market impact for larger orders</span></li>
+      <li><div class="check-box"></div><span>Test on out-of-sample data the model has never seen</span></li>
+    </ul>
+
+    <h3>Validate results</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Calculate Sharpe ratio, Sortino ratio, max drawdown</span></li>
+      <li><div class="check-box"></div><span>Check win rate vs risk-reward ratio</span></li>
+      <li><div class="check-box"></div><span>Analyze performance across different market conditions</span></li>
+      <li><div class="check-box"></div><span>Look for signs of overfitting</span></li>
+      <li><div class="check-box"></div><span>Test on multiple instruments if strategy claims to be universal</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 6 -->
+  <article class="phase" id="phase-6">
+    <div class="phase-header">
+      <div class="phase-number">phase_06</div>
+      <h2>Risk <span class="italic">management</span></h2>
+    </div>
+
+    <h3>Position sizing</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Implement Kelly Criterion or fixed fractional sizing</span></li>
+      <li><div class="check-box"></div><span>Set maximum position size per trade</span></li>
+      <li><div class="check-box"></div><span>Define maximum concurrent positions</span></li>
+      <li><div class="check-box"></div><span>Account for correlation between positions</span></li>
+    </ul>
+
+    <h3>Stop losses and circuit breakers</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Hard stop loss on every trade</span></li>
+      <li><div class="check-box"></div><span>Daily loss limit (bot stops trading if hit)</span></li>
+      <li><div class="check-box"></div><span>Weekly and monthly drawdown limits</span></li>
+      <li><div class="check-box"></div><span>Maximum consecutive losses trigger</span></li>
+      <li><div class="check-box"></div><span>Volatility-based position sizing adjustments</span></li>
+    </ul>
+
+    <h3>System safeguards</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Kill switch (manual override to halt all trading)</span></li>
+      <li><div class="check-box"></div><span>Automatic shutdown on unusual behavior</span></li>
+      <li><div class="check-box"></div><span>Maximum order size limits</span></li>
+      <li><div class="check-box"></div><span>Sanity checks on every order before submission</span></li>
+      <li><div class="check-box"></div><span>Anomaly detection on bot behavior</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 7 -->
+  <article class="phase" id="phase-7">
+    <div class="phase-header">
+      <div class="phase-number">phase_07</div>
+      <h2>Infrastructure and <span class="italic">deployment</span></h2>
+    </div>
+
+    <h3>Hosting and reliability</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Choose cloud provider (AWS, GCP, Azure, or VPS)</span></li>
+      <li><div class="check-box"></div><span>Set up redundancy (failover servers)</span></li>
+      <li><div class="check-box"></div><span>Plan for low latency if needed (co-location for HFT)</span></li>
+      <li><div class="check-box"></div><span>Ensure 24/7 uptime monitoring</span></li>
+      <li><div class="check-box"></div><span>Backup systems for critical components</span></li>
+    </ul>
+
+    <h3>Security</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Store API keys in secure vault (never in code)</span></li>
+      <li><div class="check-box"></div><span>Use IP whitelisting on exchange APIs</span></li>
+      <li><div class="check-box"></div><span>Enable 2FA on all accounts</span></li>
+      <li><div class="check-box"></div><span>Use read-only keys where possible</span></li>
+      <li><div class="check-box"></div><span>Encrypt data at rest and in transit</span></li>
+      <li><div class="check-box"></div><span>Regular security audits</span></li>
+    </ul>
+
+    <h3>Code quality</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Write unit tests for all critical components</span></li>
+      <li><div class="check-box"></div><span>Integration tests for the full pipeline</span></li>
+      <li><div class="check-box"></div><span>Use version control with proper branching strategy</span></li>
+      <li><div class="check-box"></div><span>Code reviews before deploying changes</span></li>
+      <li><div class="check-box"></div><span>CI/CD pipeline for safe deployments</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 8 -->
+  <article class="phase" id="phase-8">
+    <div class="phase-header">
+      <div class="phase-number">phase_08</div>
+      <h2>Paper <span class="italic">trading</span></h2>
+      <p class="phase-subtitle">Test in live conditions without real money on the line.</p>
+    </div>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Run the bot on paper trading for at least 1 to 3 months</span></li>
+      <li><div class="check-box"></div><span>Compare paper results to backtest results (gaps reveal problems)</span></li>
+      <li><div class="check-box"></div><span>Test during high volatility events</span></li>
+      <li><div class="check-box"></div><span>Verify order execution latency</span></li>
+      <li><div class="check-box"></div><span>Confirm data feeds work reliably 24/7</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 9 -->
+  <article class="phase" id="phase-9">
+    <div class="phase-header">
+      <div class="phase-number">phase_09</div>
+      <h2>Going <span class="italic">live</span></h2>
+    </div>
+
+    <h3>Start small</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Begin with minimum capital you can afford to lose</span></li>
+      <li><div class="check-box"></div><span>Use a fraction of intended position sizes initially</span></li>
+      <li><div class="check-box"></div><span>Monitor closely for the first few weeks</span></li>
+      <li><div class="check-box"></div><span>Compare live performance to paper trading</span></li>
+      <li><div class="check-box"></div><span>Scale up gradually as confidence builds</span></li>
+    </ul>
+
+    <h3>Logging and monitoring</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Log every trade, signal, and decision</span></li>
+      <li><div class="check-box"></div><span>Real-time performance dashboard</span></li>
+      <li><div class="check-box"></div><span>Alert system for unusual events (Telegram, email, SMS)</span></li>
+      <li><div class="check-box"></div><span>Daily performance reports</span></li>
+      <li><div class="check-box"></div><span>Track latency, slippage, and execution quality</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 10 -->
+  <article class="phase" id="phase-10">
+    <div class="phase-header">
+      <div class="phase-number">phase_10</div>
+      <h2>Maintenance and <span class="italic">iteration</span></h2>
+    </div>
+
+    <h3>Ongoing operations</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Monitor for strategy decay (markets change)</span></li>
+      <li><div class="check-box"></div><span>Regular retraining schedule for ML models</span></li>
+      <li><div class="check-box"></div><span>Watch for regime changes that might break the strategy</span></li>
+      <li><div class="check-box"></div><span>Update data pipelines as APIs change</span></li>
+      <li><div class="check-box"></div><span>Keep dependencies and libraries updated</span></li>
+    </ul>
+
+    <h3>Continuous improvement</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Analyze losing trades for patterns</span></li>
+      <li><div class="check-box"></div><span>A/B test strategy variations on paper</span></li>
+      <li><div class="check-box"></div><span>Document every change and its impact</span></li>
+      <li><div class="check-box"></div><span>Build a research backlog for future improvements</span></li>
+      <li><div class="check-box"></div><span>Stay current with new research and techniques</span></li>
+    </ul>
+  </article>
+
+  <!-- PHASE 11 -->
+  <article class="phase" id="phase-11">
+    <div class="phase-header">
+      <div class="phase-number">phase_11</div>
+      <h2>Legal and <span class="italic">compliance</span></h2>
+    </div>
+
+    <h3>Cover yourself</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Check regulations in your jurisdiction (Australia has specific rules)</span></li>
+      <li><div class="check-box"></div><span>Understand tax implications of automated trading</span></li>
+      <li><div class="check-box"></div><span>Keep detailed records for ATO reporting</span></li>
+      <li><div class="check-box"></div><span>Review broker or exchange terms of service for bot usage</span></li>
+      <li><div class="check-box"></div><span>Consider business structure if scaling significantly</span></li>
+    </ul>
+
+    <h3>Documentation</h3>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Document the strategy thoroughly</span></li>
+      <li><div class="check-box"></div><span>Keep records of all backtests and decisions</span></li>
+      <li><div class="check-box"></div><span>Maintain audit trail of code changes</span></li>
+      <li><div class="check-box"></div><span>Document risk management rules</span></li>
+      <li><div class="check-box"></div><span>Create runbooks for common issues</span></li>
+    </ul>
+  </article>
+
+  <!-- WARNINGS -->
+  <div class="warnings">
+    <div class="label">// critical warnings</div>
+    <h3>Read these before you deploy anything</h3>
+    <ul>
+      <li>Most retail trading bots lose money. Be prepared for this.</li>
+      <li>Never trade with money you can't afford to lose.</li>
+      <li>Past performance does not guarantee future results.</li>
+      <li>Overfitting is the silent killer of trading bots.</li>
+      <li>The market doesn't care about your code's elegance.</li>
+      <li>AI can write code fast, but it can't tell you if your strategy will work in real markets.</li>
+    </ul>
+  </div>
+
+</section>
+
+<!-- CLOSING CTA -->
+<section class="closing">
+  <div class="closing-card">
+    <div class="tag">// ready for more?</div>
+    <h3>Join the community where this gets built.</h3>
+    <p>Live coding sessions, real strategy reviews, and a group of developers building systematic trading systems together. Free tier available.</p>
+    <a href="https://www.skool.com/about" class="closing-cta" target="_blank" rel="noopener">join the community →</a>
+  </div>
+</section>
+
+<footer>
+  <span>// © 2026 Coder Trader. Build slow. Test thoroughly. Deploy carefully.</span>
+  <span>Not financial advice. Trading involves risk of loss.</span>
+</footer>
+
+<script>
+  // Toggle checkbox state on click
+  document.querySelectorAll('.checklist li').forEach(item => {
+    item.addEventListener('click', () => {
+      item.classList.toggle('checked');
+    });
+  });
+</script>
+
+</body>
+</html>

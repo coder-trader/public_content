@@ -10,10 +10,73 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .site-header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .logo {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .site-header .logo::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--accent);
+      margin-right: 8px;
+      vertical-align: middle;
+      animation: blink-cursor 1.2s steps(2) infinite;
+    }
+    @keyframes blink-cursor { 50% { opacity: 0.2; } }
+    .site-header .nav-cta {
+      color: var(--bg);
+      background: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 3px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .site-header .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+    }
+    .site-header .nav-cta::before {
+      content: '→ ';
+      margin-right: 2px;
+    }
+    @media (max-width: 640px) {
+      .site-header { padding: 16px 20px; }
+      .site-header .nav-cta { padding: 8px 14px; font-size: 12px; }
+    }
+  </style>
 </head>
 <body>
 
-  <main class="site-main" data-back-to-contents>
+  <header class="site-header">
+    <a href="https://www.skool.com/about" class="logo" target="_blank" rel="noopener">$ coder_trader</a>
+    <a href="https://www.skool.com/about" class="nav-cta" target="_blank" rel="noopener">join the community</a>
+  </header>
+
+  <main class="site-main">
+
+    <a href="../index.html" class="back-link">Back to all posts</a>
 
     <div class="post-meta">
       <span class="tag">RISK & OPS</span>
@@ -116,6 +179,15 @@ if (riskManager.approve(order)) {
 
   </main>
 
-  <script src="../assets/template.js"></script>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span class="site-footer__brand">// CODER_TRADER</span>
+      <span>© 2026 — Built for traders who code</span>
+      <div class="site-footer__links">
+        <a href="../index.html">Posts</a>
+        <a href="https://www.skool.com/coder-trader" target="_blank" rel="noopener">Skool</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
