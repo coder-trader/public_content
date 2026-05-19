@@ -347,13 +347,20 @@
     background: var(--accent);
   }
 
-  .code-block .label {
-    position: absolute;
-    top: 14px; right: 18px;
+  .code-block .label { display: none; }
+
+  .code-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 calc(-1 * clamp(24px, 3vw, 40px)) clamp(16px, 2.5vh, 24px);
+    padding: 10px clamp(24px, 3vw, 40px);
+    border-bottom: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
-    color: var(--ink-dim);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--ink-dim);
   }
 
   .tok-key { color: #c792ea; }
@@ -747,7 +754,7 @@
       <h2>By the time we're done<br>you'll have a <em>free checklist</em><br>that walks you through<br>every step.</h2>
     </div>
     <div class="foot">
-      <span>02 / 16</span>
+      <span>02 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -781,7 +788,7 @@
       </div>
     </div>
     <div class="foot">
-      <span>03 / 16</span>
+      <span>03 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -816,7 +823,7 @@
       <p style="text-align: center; margin-top: 40px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-dim); letter-spacing: 0.15em;">MATHS → CODE → ALIGN WITH MARKET → TEST → DEPLOY</p>
     </div>
     <div class="foot">
-      <span>04 / 16</span>
+      <span>04 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -832,7 +839,7 @@
       <p class="pull-quote">Then it hit me. <em>One person</em> can do all of that now. AI plays every role on the team.</p>
     </div>
     <div class="foot">
-      <span>05 / 16</span>
+      <span>05 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -871,7 +878,7 @@
       </div>
     </div>
     <div class="foot">
-      <span>06 / 16</span>
+      <span>06 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -889,7 +896,7 @@
       </div>
     </div>
     <div class="foot">
-      <span>07 / 16</span>
+      <span>07 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -907,7 +914,7 @@
       </div>
     </div>
     <div class="foot">
-      <span>08 / 16</span>
+      <span>08 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -946,7 +953,7 @@
       <p style="text-align: center; margin-top: 48px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-dim); letter-spacing: 0.15em;">AI HELPS YOU IN EVERY SINGLE ONE OF THESE</p>
     </div>
     <div class="foot">
-      <span>09 / 16</span>
+      <span>09 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -978,7 +985,7 @@
       </div>
     </div>
     <div class="foot">
-      <span>10 / 16</span>
+      <span>10 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -993,6 +1000,10 @@
       <div class="eyebrow">// type this into AI</div>
       <div class="code-block">
         <span class="label">PROMPT</span>
+        <div class="code-block__header">
+          <span>// prompt</span>
+          <button class="link-block__copy" id="copyPromptBtn" onclick="copyPrompt()">COPY</button>
+        </div>
 <pre style="margin:0; font-family: inherit; color: var(--ink); font-size: clamp(13px, 1.4vw, 18px); line-height: 1.6;">Write Python using the <span class="tok-num">ccxt</span> library to fetch
 the live price of <span class="tok-num">BTC/USDT</span>, <span class="tok-num">ETH/USDT</span>, and <span class="tok-num">SOL/USDT</span>
 from Binance every <span class="tok-num">2</span> seconds.
@@ -1005,7 +1016,7 @@ the whole page.</pre>
       <p style="margin-top: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-dim); letter-spacing: 0.15em; text-align: center;">→ SWITCH TO LIVE SCREEN ←</p>
     </div>
     <div class="foot">
-      <span>11 / 16</span>
+      <span>11 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -1021,7 +1032,7 @@ the whole page.</pre>
       <p class="pull-quote">That would take a <em>professional developer</em> three hours. You watched it happen in 60 seconds.</p>
     </div>
     <div class="foot">
-      <span>12 / 16</span>
+      <span>12 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -1038,60 +1049,55 @@ the whole page.</pre>
       <p style="font-family: 'Fraunces', serif; font-size: 26px; margin-top: 40px; max-width: 900px; line-height: 1.4; color: var(--ink-dim);">Knowing what to prompt, in what order, with what guardrails, is what separates a real system from a script that breaks on Monday morning.</p>
     </div>
     <div class="foot">
-      <span>13 / 16</span>
+      <span>13 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
 
-  <!-- 14. THE GIFT REVEAL -->
+  <!-- 14. CODER TRADER PREMIUM -->
   <section class="slide">
     <div class="chrome">
-      <div class="brand"><span class="dot"></span> AS PROMISED / YOUR FREE GIFT</div>
+      <div class="brand"><span class="dot"></span> TAKE IT FURTHER</div>
       <div>14</div>
     </div>
     <div class="body">
-      <div class="gift-box">
-        <div class="gift-title">The AI Trading<br>System <em>Checklist</em>.</div>
-        <p style="margin-top: 24px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ink-dim); letter-spacing: 0.15em; text-transform: uppercase;">Everything in one PDF. Yours, free.</p>
+      <div class="eyebrow">// coder trader premium</div>
+      <h2>The full curriculum.<br><em>$19 / month.</em></h2>
+      <div class="vs-grid" style="grid-template-columns: 1fr 1fr; margin-top: clamp(20px, 3vh, 36px);">
+        <div class="vs-col new" style="border-right: none;">
+          <div class="vs-label">// what's inside</div>
+          <ul class="vs-list">
+            <li>7 Day Trading System</li>
+            <li>Basics of Trading</li>
+            <li>Weekly Code Class</li>
+            <li>Daily market reports</li>
+            <li>Full community access</li>
+          </ul>
+        </div>
+        <div class="vs-col new" style="border-left: 1px solid var(--accent-dim);">
+          <div class="vs-label">// pricing</div>
+          <ul class="vs-list">
+            <li style="color: var(--accent);">$19 / month</li>
+            <li style="color: var(--accent);">$197 / year <span style="font-size: 0.75em; color: var(--ink-dim);">— save $31</span></li>
+          </ul>
+          <div style="margin-top: clamp(16px, 3vh, 28px);">
+            <div class="vs-label" style="margin-bottom: 8px;">// where to join</div>
+            <span style="color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: clamp(11px, 1.1vw, 14px); word-break: break-all;">skool.com/coder-trader/about</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="foot">
-      <span>14 / 16</span>
+      <span>14 / 15</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
 
-  <!-- 15. WHAT'S INSIDE THE CHECKLIST -->
-  <section class="slide">
-    <div class="chrome">
-      <div class="brand"><span class="dot"></span> WHAT'S INSIDE</div>
-      <div>15</div>
-    </div>
-    <div class="body">
-      <div class="eyebrow">// what you get</div>
-      <h2>Every step.<br><em>Every prompt</em>.</h2>
-      <ul class="inside-list">
-        <li>The full 5-step build process</li>
-        <li>Plug-and-play AI prompts</li>
-        <li>Risk management rules</li>
-        <li>Position sizing formulas</li>
-        <li>Backtesting checklist</li>
-        <li>Deployment checklist</li>
-        <li>What to do when it breaks</li>
-        <li>Live monitoring setup</li>
-      </ul>
-    </div>
-    <div class="foot">
-      <span>15 / 16</span>
-      <span>CODER_TRADER</span>
-    </div>
-  </section>
-
-  <!-- 16. CTA -->
+  <!-- 15. CTA -->
   <section class="slide">
     <div class="chrome">
       <div class="brand"><span class="dot"></span> GRAB YOUR COPY</div>
-      <div>16</div>
+      <div>15</div>
     </div>
     <div class="body">
       <div class="eyebrow">// paste these into your browser — links are live now</div>
@@ -1121,7 +1127,7 @@ the whole page.</pre>
       <p style="margin-top: clamp(20px, 3vh, 36px); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-dim); letter-spacing: 0.25em;">CODER.TRADER &nbsp; / &nbsp; SEE YOU INSIDE</p>
     </div>
     <div class="foot">
-      <span>16 / 16 — END</span>
+      <span>15 / 15 — END</span>
       <span>CODER_TRADER</span>
     </div>
   </section>
@@ -1154,6 +1160,21 @@ the whole page.</pre>
 </div>
 
 <script>
+  function copyPrompt() {
+    const text = `Write Python using the ccxt library to fetch the live price of BTC/USDT, ETH/USDT, and SOL/USDT from Binance every 2 seconds.\n\nDisplay the results in a Streamlit table that shows symbol, price, and last-updated time. The table should auto-refresh without reloading the whole page.`;
+    const btn = document.getElementById('copyPromptBtn');
+    const confirm = () => {
+      btn.textContent = 'COPIED ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2500);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(confirm).catch(() => fallbackCopy(text, confirm));
+    } else {
+      fallbackCopy(text, confirm);
+    }
+  }
+
   function copyLinks() {
     const links = [
       'https://coder-trader.github.io/public_content/content/ai_trading_bot_checklist.html',
